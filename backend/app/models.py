@@ -98,11 +98,36 @@ class Usuario(Base):
     )
 
     rol = relationship("Rol", back_populates="usuarios")
+    codigos_recuperacion = relationship(
+        "CodigoRecuperacion",
+        back_populates="usuario",
+        cascade="all, delete-orphan"
+    )
 
 
     @property
     def rol_nombre(self) -> str:
         return self.rol.nombre if self.rol else ""
+
+
+class CodigoRecuperacion(Base):
+    """Código temporal usado exclusivamente para restablecer una contraseña."""
+    __tablename__ = "codigos_recuperacion"
+
+    id_codigo = Column(Integer, primary_key=True, autoincrement=True)
+    id_usuario = Column(
+        Integer,
+        ForeignKey("usuarios.id_usuario", ondelete="CASCADE", onupdate="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    codigo_hash = Column(String(255), nullable=False)
+    expira_en = Column(DateTime, nullable=False)
+    intentos = Column(Integer, nullable=False, default=0)
+    usado = Column(Boolean, nullable=False, default=False)
+    fecha_creacion = Column(DateTime, server_default=func.now())
+
+    usuario = relationship("Usuario", back_populates="codigos_recuperacion")
 
 
 class Producto(Base):

@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import RegisterModal from "../components/RegisterModal";
+import PasswordRecoveryModal from "../components/PasswordRecoveryModal";
 import logo from "../assets/logo.jpg";
 
 function Login() {
   const navigate = useNavigate();
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
+  const [isRecoveryOpen, setIsRecoveryOpen] = useState(false);
   const [loginData, setLoginData] = useState({ correo: "", contrasena: "" });
   const [loginSuccess, setLoginSuccess] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -20,7 +22,7 @@ function Login() {
 
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL ?? "http://localhost:3000"}/api/v1/auth/login`,
+        `${import.meta.env.VITE_API_URL ?? "http://localhost:8000"}/api/v1/auth/login`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -128,9 +130,9 @@ function Login() {
                 <label className="text-xs font-semibold text-slate-300 uppercase tracking-wider">
                   Contraseña <span className="text-[#06b6d4]">*</span>
                 </label>
-                <a href="#olvido" onClick={(e) => e.preventDefault()} className="text-xs text-[#06b6d4] hover:underline no-underline">
+                <button type="button" onClick={() => setIsRecoveryOpen(true)} className="border-0 bg-transparent p-0 text-xs text-[#06b6d4] hover:underline cursor-pointer">
                   ¿Olvidaste tu contraseña?
-                </a>
+                </button>
               </div>
               <div className="relative">
                 <input
@@ -205,6 +207,10 @@ function Login() {
       <RegisterModal
         isOpen={isRegisterOpen}
         onClose={() => setIsRegisterOpen(false)}
+      />
+      <PasswordRecoveryModal
+        isOpen={isRecoveryOpen}
+        onClose={() => setIsRecoveryOpen(false)}
       />
 
     </div>

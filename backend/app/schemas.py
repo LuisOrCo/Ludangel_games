@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr, ConfigDict
+from pydantic import BaseModel, EmailStr, ConfigDict, Field
 from typing import Optional, List
 
 
@@ -88,6 +88,20 @@ class LoginResponse(BaseModel):
     token_type: str = "bearer"
     usuario: UsuarioResponse
     message: str = "Inicio de sesión exitoso"
+
+
+class SolicitarRecuperacionRequest(BaseModel):
+    correo: EmailStr
+
+
+class VerificarCodigoRecuperacionRequest(BaseModel):
+    correo: EmailStr
+    codigo: str = Field(min_length=6, max_length=6, pattern=r"^\d{6}$")
+
+
+class RestablecerContrasenaRequest(BaseModel):
+    token_recuperacion: str = Field(min_length=1)
+    contrasena: str = Field(min_length=9, max_length=72)
 
 
 # ==========================================

@@ -32,7 +32,7 @@ function ClientPanel() {
 
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL ?? "http://localhost:3000"}/api/v1/usuarios/perfil`,
+        `${import.meta.env.VITE_API_URL ?? "http://localhost:8000"}/api/v1/usuarios/perfil`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -122,7 +122,7 @@ function ClientPanel() {
 
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL ?? "http://localhost:3000"}/api/v1/usuarios/perfil`,
+        `${import.meta.env.VITE_API_URL ?? "http://localhost:8000"}/api/v1/usuarios/perfil`,
         {
           method: "PUT",
           headers: {

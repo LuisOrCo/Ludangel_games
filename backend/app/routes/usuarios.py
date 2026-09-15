@@ -58,8 +58,7 @@ def formatear_usuario(usuario: Usuario) -> UsuarioResponse:
 def obtener_perfil(usuario: Usuario = Depends(get_current_user)):
     """Retorna los datos del perfil del usuario autenticado vía JWT."""
     return {"usuario": formatear_usuario(usuario)}
-
-
+        
 @router.put("/perfil")
 def actualizar_perfil(
     perfil_data: UsuarioPerfilUpdate,

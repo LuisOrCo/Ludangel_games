@@ -1,0 +1,6 @@
+.env
+backend/.env
+frontend/Primeros_componentes/.env
+__pycache__/
+*.pyc
+node_modules/
