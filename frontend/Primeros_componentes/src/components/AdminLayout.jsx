@@ -44,6 +44,24 @@ function AdminLayout({ children }) {
       icono: "🎮",
       descripcion: "Catálogo, precios y stock",
     },
+    {
+      ruta: "/admin/ventas",
+      etiqueta: "Ventas & Facturación",
+      icono: "🛒",
+      descripcion: "Historial de compras y PDF",
+    },
+    {
+      ruta: "/admin/pqrs",
+      etiqueta: "Atención a PQRS",
+      icono: "📩",
+      descripcion: "Peticiones, quejas y reclamos",
+    },
+    {
+      ruta: "/admin/reportes",
+      etiqueta: "Reportes & Stats",
+      icono: "📈",
+      descripcion: "Informes de ventas y productos",
+    },
   ];
 
   const accesosPublicos = [
@@ -52,6 +70,18 @@ function AdminLayout({ children }) {
   ];
 
   const esActivo = (ruta) => location.pathname === ruta;
+
+  const getNombreSeccion = () => {
+    switch (location.pathname) {
+      case "/admin": return "Dashboard Principal";
+      case "/admin/usuarios": return "Gestión de Usuarios";
+      case "/admin/productos": return "Gestión de Productos";
+      case "/admin/ventas": return "Historial de Ventas & Facturación";
+      case "/admin/pqrs": return "Atención a Solicitudes PQRS";
+      case "/admin/reportes": return "Reportes y Estadísticas";
+      default: return "Administración";
+    }
+  };
 
   return (
     <div className="flex h-dvh overflow-hidden bg-[#070b14] text-white">
@@ -63,23 +93,23 @@ function AdminLayout({ children }) {
         />
       )}
 
-      {/* MENÚ LATERAL (SIDEBAR) */}
+      {/* MENÚ LATERAL (SIDEBAR INDEPENDIENTE) */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 flex w-64 flex-col justify-between border-r border-slate-800 bg-[#0b1120] p-4 shadow-2xl transition-transform duration-300 lg:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r border-slate-800 bg-[#0b1120] p-4 shadow-2xl transition-transform duration-300 lg:translate-x-0 ${
           sidebarAbierto ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <div className="flex flex-col gap-5">
-          {/* HEADER DEL SIDEBAR */}
-          <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+        {/* HEADER Y PERFIL DEL ADMINISTRADOR (FIJOS ARRIBA) */}
+        <div className="shrink-0 flex flex-col gap-4 pb-4 border-b border-slate-800/80">
+          <div className="flex items-center justify-between">
             <Link to="/admin" className="flex items-center gap-3 no-underline">
               <img
                 src={logo}
                 alt="LudAngel Games Logo"
-                className="h-10 w-auto rounded-xl shadow-md border border-slate-700/60"
+                className="h-9 w-auto rounded-xl shadow-md border border-slate-700/60"
               />
               <div>
-                <span className="text-base font-black tracking-wide text-white block">
+                <span className="text-base font-black tracking-wide text-white block leading-tight">
                   LUDANGEL <span className="text-[#06b6d4]">GAMES</span>
                 </span>
                 <span className="text-[10px] font-bold uppercase tracking-widest text-[#06b6d4]">Administración</span>
@@ -95,51 +125,53 @@ function AdminLayout({ children }) {
             </button>
           </div>
 
-          {/* PERFIL DEL ADMINISTRADOR */}
           <div className="rounded-xl border border-slate-800 bg-[#0f172a] p-3 flex items-center gap-3">
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-tr from-[#06b6d4] to-[#0284c7] font-black text-slate-950 text-base shadow-md">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-tr from-[#06b6d4] to-[#0284c7] font-black text-slate-950 text-sm shadow-md">
               {usuario?.nombre ? usuario.nombre[0].toUpperCase() : "A"}
             </div>
             <div className="overflow-hidden">
-              <p className="text-sm font-bold text-white truncate m-0">
+              <p className="text-xs font-bold text-white truncate m-0">
                 {usuario?.nombre} {usuario?.apellido || ""}
               </p>
-              <span className="inline-block rounded-full bg-cyan-500/10 px-2 py-0.5 text-[10px] font-bold text-cyan-300 border border-cyan-500/20">
+              <span className="inline-block rounded-full bg-cyan-500/10 px-2 py-0.5 text-[9px] font-bold text-cyan-300 border border-cyan-500/20">
                 Administrador
               </span>
             </div>
           </div>
+        </div>
 
-          {/* NAVEGACIÓN PRINCIPAL DEL DASHBOARD */}
-          <div className="flex flex-col gap-1.5">
-            <span className="px-3 text-[11px] font-bold uppercase tracking-wider text-slate-500">Menú</span>
+        {/* NAVEGACIÓN Y ENLACES (SCROLL INDEPENDIENTE) */}
+        <div className="flex-1 min-h-0 overflow-y-auto py-3 pr-1 flex flex-col gap-4 scrollbar-thin scrollbar-thumb-slate-700">
+          {/* NAVEGACIÓN PRINCIPAL */}
+          <div className="flex flex-col gap-1">
+            <span className="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">Menú</span>
             {menuItems.map((item) => (
               <Link
                 key={item.ruta}
                 to={item.ruta}
                 onClick={() => setSidebarAbierto(false)}
-                className={`flex items-center gap-3 rounded-xl px-3.5 py-3 text-sm font-bold no-underline transition-all ${
+                className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-xs font-bold no-underline transition-all ${
                   esActivo(item.ruta)
                     ? "bg-gradient-to-r from-[#06b6d4] to-[#0284c7] text-slate-950 shadow-lg shadow-cyan-500/20 font-black"
                     : "text-slate-300 hover:bg-slate-800/80 hover:text-white"
                 }`}
               >
-                <span className="text-lg">{item.icono}</span>
+                <span className="text-base">{item.icono}</span>
                 <span>{item.etiqueta}</span>
               </Link>
             ))}
           </div>
 
           {/* VISTAS PÚBLICAS */}
-          <div className="flex flex-col gap-1.5 pt-3 border-t border-slate-800">
-            <span className="px-3 text-[11px] font-bold uppercase tracking-wider text-slate-500">
+          <div className="flex flex-col gap-1 pt-3 border-t border-slate-800/80">
+            <span className="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">
               Vistas Públicas
             </span>
             {accesosPublicos.map((item) => (
               <Link
                 key={item.ruta}
                 to={item.ruta}
-                className="flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-xs font-semibold text-slate-400 no-underline transition-all hover:bg-slate-800/50 hover:text-slate-200"
+                className="flex items-center gap-3 rounded-xl px-3 py-2 text-xs font-semibold text-slate-400 no-underline transition-all hover:bg-slate-800/50 hover:text-slate-200"
               >
                 <span>{item.icono}</span>
                 <span>{item.etiqueta}</span>
@@ -148,12 +180,12 @@ function AdminLayout({ children }) {
           </div>
         </div>
 
-        {/* PIE DEL SIDEBAR: CERRAR SESIÓN */}
-        <div className="border-t border-slate-800 pt-4">
+        {/* PIE DEL SIDEBAR: CERRAR SESIÓN (SIEMPRE FIJO ABAJO) */}
+        <div className="shrink-0 border-t border-slate-800 pt-3 mt-auto">
           <button
             type="button"
             onClick={cerrarSesion}
-            className="flex w-full items-center gap-3 rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm font-bold text-red-300 transition-colors hover:bg-red-500/20 cursor-pointer"
+            className="flex w-full items-center gap-3 rounded-xl border border-red-500/30 bg-red-500/10 px-3.5 py-2.5 text-xs font-bold text-red-300 transition-colors hover:bg-red-500/20 cursor-pointer"
           >
             <span>🚪</span>
             <span>Cerrar Sesión</span>
@@ -176,13 +208,7 @@ function AdminLayout({ children }) {
             <div className="flex items-center gap-2">
               <span className="text-xs font-bold text-slate-500 uppercase">Sección:</span>
               <span className="text-sm font-extrabold text-[#06b6d4]">
-                {location.pathname === "/admin"
-                  ? "Dashboard Principal"
-                  : location.pathname === "/admin/usuarios"
-                  ? "Gestión de Usuarios"
-                  : location.pathname === "/admin/productos"
-                  ? "Gestión de Productos"
-                  : "Administración"}
+                {getNombreSeccion()}
               </span>
             </div>
           </div>

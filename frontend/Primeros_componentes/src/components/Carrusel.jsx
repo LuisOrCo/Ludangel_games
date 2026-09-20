@@ -28,45 +28,75 @@ function Carrusel() {
   const [actual, setActual] = useState(0);
 
   const siguiente = () => {
-    setActual((actual + 1) % imagenes.length);
+    setActual((prev) => (prev + 1) % imagenes.length);
   };
 
   const anterior = () => {
-    setActual((actual - 1 + imagenes.length) % imagenes.length);
+    setActual((prev) => (prev - 1 + imagenes.length) % imagenes.length);
   };
 
   useEffect(() => {
     const intervalo = setInterval(() => {
-      setActual((actual) => (actual + 1) % imagenes.length);
-    }, 5000);
+      setActual((prev) => (prev + 1) % imagenes.length);
+    }, 4500);
 
     return () => clearInterval(intervalo);
-  }, []);
+  }, [imagenes.length]);
 
-return (
-  <div className="w-full h-[450px] mx-auto mt-[20px] mb-[40px] flex items-center justify-center gap-[15px] px-4">
-    <button
-      onClick={anterior}
-      className="bg-[#222] text-white border-none p-[15px] text-[20px] cursor-pointer rounded-[5px] hover:bg-[#444] shrink-0"
-    >
-      ❮
-    </button>
+  return (
+    <div className="relative w-full overflow-hidden rounded-3xl border border-cyan-500/30 bg-[#0f172a] shadow-2xl shadow-cyan-500/10 group">
+      {/* IMAGEN DEL CARRUSEL */}
+      <div className="relative h-80 sm:h-96 md:h-[420px] w-full overflow-hidden bg-slate-950">
+        <img
+          src={imagenes[actual]}
+          alt={`Promoción ${actual + 1}`}
+          className="h-full w-full object-cover transition-all duration-700 ease-in-out group-hover:scale-105"
+        />
 
-    <img
-      src={imagenes[actual]}
-      alt={`Imagen ${actual + 1}`}
-      className="flex-1 max-w-[750px] h-[400px] object-cover rounded-[10px]"
-    />
+        {/* OVERLAY DEGRADADO */}
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/20 to-transparent" />
 
-    <button
-      onClick={siguiente}
-      className="bg-[#222] text-white border-none p-[15px] text-[20px] cursor-pointer rounded-[5px] hover:bg-[#444] shrink-0"
-    >
-      ❯
-    </button>
+        {/* INDICADOR EN LA IMAGEN */}
+        <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between">
+          <span className="rounded-full bg-slate-900/80 backdrop-blur-md px-3 py-1 text-[11px] font-bold text-cyan-400 border border-cyan-500/30">
+            Novedades {actual + 1} / {imagenes.length}
+          </span>
 
-  </div>
-);
+          {/* PUNTOS INDICADORES */}
+          <div className="flex gap-1.5">
+            {imagenes.map((_, idx) => (
+              <button
+                key={idx}
+                onClick={() => setActual(idx)}
+                className={`h-2 rounded-full transition-all cursor-pointer ${
+                  actual === idx ? "w-6 bg-cyan-400" : "w-2 bg-slate-600/70 hover:bg-slate-400"
+                }`}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* BOTONES NAVEGACIÓN OVERLAY */}
+        <button
+          type="button"
+          onClick={anterior}
+          className="absolute left-3 top-1/2 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full border border-slate-700/60 bg-slate-900/70 text-lg text-white backdrop-blur-md transition-all hover:bg-cyan-500 hover:text-slate-950 cursor-pointer shadow-lg"
+          aria-label="Anterior"
+        >
+          ❮
+        </button>
+
+        <button
+          type="button"
+          onClick={siguiente}
+          className="absolute right-3 top-1/2 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full border border-slate-700/60 bg-slate-900/70 text-lg text-white backdrop-blur-md transition-all hover:bg-cyan-500 hover:text-slate-950 cursor-pointer shadow-lg"
+          aria-label="Siguiente"
+        >
+          ❯
+        </button>
+      </div>
+    </div>
+  );
 }
 
 export default Carrusel;

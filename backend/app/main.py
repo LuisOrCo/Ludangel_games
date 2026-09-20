@@ -5,6 +5,10 @@ from .routes.auth import router as auth_router
 from .routes.usuarios import router as usuarios_router
 from .routes.productos import router as productos_router
 from .routes.servicios import router as servicios_router
+from .routes.ventas import router as ventas_router
+from .routes.pqrs import router as pqrs_router
+from .routes.reportes import router as reportes_router
+from .routes.chatbot import router as chatbot_router
 
 app = FastAPI(
     title="LudAngel Games API - SENA ADSO",
@@ -31,6 +35,10 @@ app.include_router(auth_router, prefix="/api/v1")
 app.include_router(usuarios_router, prefix="/api/v1")
 app.include_router(productos_router, prefix="/api/v1")
 app.include_router(servicios_router, prefix="/api/v1")
+app.include_router(ventas_router, prefix="/api/v1")
+app.include_router(pqrs_router, prefix="/api/v1")
+app.include_router(reportes_router, prefix="/api/v1")
+app.include_router(chatbot_router, prefix="/api/v1")
 
 # ==========================================
 # ALIASES COMPATIBILIDAD (OCULTOS EN SWAGGER PARA EVITAR DUPLICADOS)
@@ -39,11 +47,20 @@ app.include_router(auth_router, prefix="/api", include_in_schema=False)
 app.include_router(usuarios_router, prefix="/api", include_in_schema=False)
 app.include_router(productos_router, prefix="/api", include_in_schema=False)
 app.include_router(servicios_router, prefix="/api", include_in_schema=False)
+app.include_router(ventas_router, prefix="/api", include_in_schema=False)
+app.include_router(pqrs_router, prefix="/api", include_in_schema=False)
+app.include_router(reportes_router, prefix="/api", include_in_schema=False)
+app.include_router(chatbot_router, prefix="/api", include_in_schema=False)
 
 app.include_router(auth_router, include_in_schema=False)
 app.include_router(usuarios_router, include_in_schema=False)
 app.include_router(productos_router, include_in_schema=False)
 app.include_router(servicios_router, include_in_schema=False)
+app.include_router(ventas_router, include_in_schema=False)
+app.include_router(pqrs_router, include_in_schema=False)
+app.include_router(reportes_router, include_in_schema=False)
+app.include_router(chatbot_router, include_in_schema=False)
+
 
 
 @app.get("/", tags=["General"])

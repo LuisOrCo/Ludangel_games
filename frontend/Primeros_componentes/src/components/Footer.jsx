@@ -11,7 +11,7 @@ function Footer() {
             <img
               src={logo}
               alt="LudAngel Games Logo Versión Blanca"
-              className="h-12 w-auto object-contain filter brightness-0 invert opacity-95"
+              className="h-12 w-auto object-contain opacity-95"
             />
             <h2 className="text-xl font-black text-white m-0 tracking-wide">LudAngel Games</h2>
           </div>

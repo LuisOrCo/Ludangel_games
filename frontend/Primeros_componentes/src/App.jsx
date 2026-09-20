@@ -1,5 +1,5 @@
 import { Routes, Route, useLocation } from "react-router-dom";
-import './App.css'
+import './App.css';
 
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
@@ -13,18 +13,23 @@ import Productos from "./pages/Productos";
 import AdminPanel from "./pages/AdminPanel";
 import AdminUsers from "./pages/AdminUsers";
 import AdminProducts from "./pages/AdminProducts";
+import AdminVentas from "./pages/AdminVentas";
+import AdminPQRS from "./pages/AdminPQRS";
+import AdminReportes from "./pages/AdminReportes";
 import ClientPanel from "./pages/ClientPanel";
 import EmployeePanel from "./pages/EmployeePanel";
 import EmployeeRoute from "./components/EmployeeRoute";
 import AdminRoute from "./components/AdminRoute";
 import ClientRoute from "./components/ClientRoute";
 import WhatsAppButton from "./components/WhatsAppButton";
+import Chatbot from "./components/Chatbot";
 import AdminLayout from "./components/AdminLayout";
 import EmployeeLayout from "./components/EmployeeLayout";
 
+
 // Rutas que tienen su propio layout (sin Navbar/Footer global)
 const RUTAS_ADMIN = [
-  "/admin", "/admin/usuarios", "/admin/productos",
+  "/admin", "/admin/usuarios", "/admin/productos", "/admin/ventas", "/admin/pqrs", "/admin/reportes",
   "/empleado", "/empleado/productos",
 ];
 
@@ -40,15 +45,7 @@ function App() {
       <main className="flex-1">
         <Routes>
           {/* ── Rutas públicas ── */}
-          <Route
-            path="/"
-            element={
-              <>
-                <Carrusel />
-                <Inicio />
-              </>
-            }
-          />
+          <Route path="/" element={<Inicio />} />
           <Route path="/productos" element={<Productos />} />
           <Route path="/quienes-somos" element={<QuienesSomos />} />
           <Route path="/contacto" element={<Contacto />} />
@@ -118,15 +115,46 @@ function App() {
               </AdminRoute>
             }
           />
+          <Route
+            path="/admin/ventas"
+            element={
+              <AdminRoute>
+                <AdminLayout>
+                  <AdminVentas />
+                </AdminLayout>
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/pqrs"
+            element={
+              <AdminRoute>
+                <AdminLayout>
+                  <AdminPQRS />
+                </AdminLayout>
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/reportes"
+            element={
+              <AdminRoute>
+                <AdminLayout>
+                  <AdminReportes />
+                </AdminLayout>
+              </AdminRoute>
+            }
+          />
         </Routes>
       </main>
 
-      {/* Footer y WhatsApp solo fuera del panel admin */}
+      {/* Footer, WhatsApp y Chatbot IA fuera del panel admin */}
       {!esRutaAdmin && <Footer />}
       {!esRutaAdmin && <WhatsAppButton />}
+      {!esRutaAdmin && <Chatbot />}
     </div>
   );
 }
 
-export default App;
 
+export default App;

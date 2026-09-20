@@ -72,11 +72,22 @@ function AdminProducts({ panelPath = "/admin" }) {
 
   const actualizarCampo = (campo, valor) => setFormulario({ ...formulario, [campo]: valor });
 
+  const [busqueda, setBusqueda] = useState("");
+
   return (
     <div className="mx-auto flex max-w-7xl flex-col gap-7 px-6 py-12 sm:px-8 sm:py-16">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div><Link to={panelPath} className="text-sm font-semibold text-[#06b6d4] no-underline hover:underline">← Volver al panel</Link><h1 className="mt-3 text-3xl font-black text-white sm:text-4xl">Gestión de productos</h1><p className="mt-2 text-sm text-slate-400">Administra el catálogo de LUDANGEL Games.</p></div>
-        <button type="button" onClick={abrirCrear} className="rounded-xl bg-gradient-to-r from-[#06b6d4] to-[#0284c7] px-5 py-3 text-sm font-bold text-slate-950 shadow-lg shadow-cyan-500/20">+ Crear producto</button>
+        <div className="flex flex-col sm:flex-row items-center gap-3">
+          <input
+            type="text"
+            placeholder="🔍 Buscar por nombre..."
+            value={busqueda}
+            onChange={(e) => setBusqueda(e.target.value)}
+            className="w-full sm:w-64 rounded-xl border border-slate-700 bg-slate-900 px-3.5 py-2.5 text-xs text-white placeholder-slate-400 focus:border-cyan-500 focus:outline-none"
+          />
+          <button type="button" onClick={abrirCrear} className="w-full sm:w-auto shrink-0 rounded-xl bg-gradient-to-r from-[#06b6d4] to-[#0284c7] px-5 py-3 text-sm font-bold text-slate-950 shadow-lg shadow-cyan-500/20">+ Crear producto</button>
+        </div>
       </div>
       {mensaje && <p className="rounded-xl border border-emerald-500/40 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-300">{mensaje}</p>}
       {error && <p className="rounded-xl border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-300">{error}</p>}
@@ -94,7 +105,7 @@ function AdminProducts({ panelPath = "/admin" }) {
       </FormModal>}
 
       <section className="overflow-x-auto rounded-2xl border border-slate-800 bg-[#0f172a] shadow-xl"><table className="w-full min-w-[850px] text-left text-sm"><thead className="border-b border-slate-800 bg-slate-900/60 text-xs uppercase tracking-wider text-slate-400"><tr><th className="px-5 py-4">Producto</th><th className="px-5 py-4">Precio</th><th className="px-5 py-4">Stock</th><th className="px-5 py-4">Estado</th><th className="px-5 py-4">Acciones</th></tr></thead><tbody className="divide-y divide-slate-800">
-        {cargando ? <tr><td colSpan="5" className="px-5 py-10 text-center text-slate-400">Cargando productos...</td></tr> : productos.length === 0 ? <tr><td colSpan="5" className="px-5 py-10 text-center text-slate-400">No hay productos registrados.</td></tr> : productos.map((producto) => <tr key={producto.id_producto} className="text-slate-300"><td className="px-5 py-4"><div className="flex items-center gap-3">{producto.imagen ? <img src={producto.imagen} alt="" className="h-11 w-11 rounded-lg object-cover" /> : <span className="flex h-11 w-11 items-center justify-center rounded-lg bg-slate-800 text-xl">🎮</span>}<div><p className="font-bold text-white">{producto.nombre}</p><p className="mt-1 max-w-xs truncate text-xs text-slate-500">{producto.descripcion || "Sin descripción"}</p></div></div></td><td className="px-5 py-4 font-semibold text-white">${Number(producto.precio).toLocaleString("es-CO")}</td><td className="px-5 py-4">{producto.stock}</td><td className="px-5 py-4"><button onClick={() => cambiarEstado(producto)} className={`rounded-full px-2.5 py-1 text-xs font-bold ${producto.estado ? "bg-emerald-500/15 text-emerald-300" : "bg-red-500/15 text-red-300"}`}>{producto.estado ? "Activo" : "Inactivo"}</button></td><td className="px-5 py-4"><div className="flex gap-2"><button onClick={() => abrirEditar(producto)} className="rounded-lg border border-slate-700 px-3 py-2 text-xs font-bold text-slate-200 hover:border-cyan-500">Editar</button><button onClick={() => eliminar(producto)} className="rounded-lg border border-red-500/40 px-3 py-2 text-xs font-bold text-red-300 hover:bg-red-500/10">Eliminar</button></div></td></tr>) }
+        {cargando ? <tr><td colSpan="5" className="px-5 py-10 text-center text-slate-400">Cargando productos...</td></tr> : productos.filter(p => `${p.nombre} ${p.descripcion ?? ''}`.toLowerCase().includes(busqueda.toLowerCase())).length === 0 ? <tr><td colSpan="5" className="px-5 py-10 text-center text-slate-400">No hay productos que coincidan con la búsqueda.</td></tr> : productos.filter(p => `${p.nombre} ${p.descripcion ?? ''}`.toLowerCase().includes(busqueda.toLowerCase())).map((producto) => <tr key={producto.id_producto} className="text-slate-300"><td className="px-5 py-4"><div className="flex items-center gap-3">{producto.imagen ? <img src={producto.imagen} alt="" className="h-11 w-11 rounded-lg object-cover" /> : <span className="flex h-11 w-11 items-center justify-center rounded-lg bg-slate-800 text-xl">🎮</span>}<div><p className="font-bold text-white">{producto.nombre}</p><p className="mt-1 max-w-xs truncate text-xs text-slate-500">{producto.descripcion || "Sin descripción"}</p></div></div></td><td className="px-5 py-4 font-semibold text-white">${Number(producto.precio).toLocaleString("es-CO")}</td><td className="px-5 py-4">{producto.stock}</td><td className="px-5 py-4"><button onClick={() => cambiarEstado(producto)} className={`rounded-full px-2.5 py-1 text-xs font-bold ${producto.estado ? "bg-emerald-500/15 text-emerald-300" : "bg-red-500/15 text-red-300"}`}>{producto.estado ? "Activo" : "Inactivo"}</button></td><td className="px-5 py-4"><div className="flex gap-2"><button onClick={() => abrirEditar(producto)} className="rounded-lg border border-slate-700 px-3 py-2 text-xs font-bold text-slate-200 hover:border-cyan-500">Editar</button><button onClick={() => eliminar(producto)} className="rounded-lg border border-red-500/40 px-3 py-2 text-xs font-bold text-red-300 hover:bg-red-500/10">Eliminar</button></div></td></tr>) }
       </tbody></table></section>
     </div>
   );

@@ -45,7 +45,8 @@ def formatear_usuario(usuario: Usuario) -> UsuarioResponse:
         correo=usuario.correo,
         id_rol=usuario.id_rol,
         rol=rol_str,
-        estado=usuario.estado
+        estado=usuario.estado,
+        fecha_creacion=usuario.fecha_creacion
     )
 
 

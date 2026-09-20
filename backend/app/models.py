@@ -103,6 +103,8 @@ class Usuario(Base):
         back_populates="usuario",
         cascade="all, delete-orphan"
     )
+    ventas = relationship("Venta", back_populates="usuario")
+    pqrs = relationship("PQR", back_populates="usuario")
 
 
     @property
@@ -157,6 +159,66 @@ class Producto(Base):
         server_default=func.now(),
         onupdate=func.now()
     )
+
+
+class Venta(Base):
+    __tablename__ = "ventas"
+
+    id_venta = Column(Integer, primary_key=True, autoincrement=True)
+    id_usuario = Column(
+        Integer,
+        ForeignKey("usuarios.id_usuario", ondelete="RESTRICT", onupdate="CASCADE"),
+        nullable=False
+    )
+    fecha_venta = Column(DateTime, server_default=func.now())
+    total = Column(Numeric(10, 2), nullable=False)
+    metodo_pago = Column(String(50), nullable=False, default="Efectivo")
+    estado = Column(String(20), nullable=False, default="Completada")
+
+    usuario = relationship("Usuario", back_populates="ventas")
+    detalles = relationship("DetalleVenta", back_populates="venta", cascade="all, delete-orphan")
+
+
+class DetalleVenta(Base):
+    __tablename__ = "detalle_ventas"
+
+    id_detalle = Column(Integer, primary_key=True, autoincrement=True)
+    id_venta = Column(
+        Integer,
+        ForeignKey("ventas.id_venta", ondelete="CASCADE", onupdate="CASCADE"),
+        nullable=False
+    )
+    id_producto = Column(
+        Integer,
+        ForeignKey("productos.id_producto", ondelete="RESTRICT", onupdate="CASCADE"),
+        nullable=False
+    )
+    cantidad = Column(Integer, nullable=False, default=1)
+    precio_unitario = Column(Numeric(10, 2), nullable=False)
+    subtotal = Column(Numeric(10, 2), nullable=False)
+
+    venta = relationship("Venta", back_populates="detalles")
+    producto = relationship("Producto")
+
+
+class PQR(Base):
+    __tablename__ = "pqrs"
+
+    id_pqr = Column(Integer, primary_key=True, autoincrement=True)
+    id_usuario = Column(
+        Integer,
+        ForeignKey("usuarios.id_usuario", ondelete="CASCADE", onupdate="CASCADE"),
+        nullable=False
+    )
+    tipo = Column(String(20), nullable=False, default="Peticion")
+    asunto = Column(String(150), nullable=False)
+    descripcion = Column(Text, nullable=False)
+    estado = Column(String(20), nullable=False, default="Pendiente")
+    respuesta = Column(Text, nullable=True)
+    fecha_creacion = Column(DateTime, server_default=func.now())
+    fecha_respuesta = Column(DateTime, nullable=True, onupdate=func.now())
+
+    usuario = relationship("Usuario", back_populates="pqrs")
 
 
 class Servicio(Base):
