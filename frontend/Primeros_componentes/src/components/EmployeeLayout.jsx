@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import logo from "../assets/logo.jpg";
 
-function AdminLayout({ children }) {
+function EmployeeLayout({ children }) {
   const location = useLocation();
   const navigate = useNavigate();
   const [sidebarAbierto, setSidebarAbierto] = useState(false);
@@ -27,19 +27,13 @@ function AdminLayout({ children }) {
 
   const menuItems = [
     {
-      ruta: "/admin",
+      ruta: "/empleado",
       etiqueta: "Dashboard / Resumen",
       icono: "📊",
-      descripcion: "Métricas y vista general",
+      descripcion: "Vista general del panel",
     },
     {
-      ruta: "/admin/usuarios",
-      etiqueta: "Gestión de Usuarios",
-      icono: "👥",
-      descripcion: "CRUD completo y roles",
-    },
-    {
-      ruta: "/admin/productos",
+      ruta: "/empleado/productos",
       etiqueta: "Gestión de Productos",
       icono: "🎮",
       descripcion: "Catálogo, precios y stock",
@@ -72,7 +66,7 @@ function AdminLayout({ children }) {
         <div className="flex flex-col gap-5">
           {/* HEADER DEL SIDEBAR */}
           <div className="flex items-center justify-between border-b border-slate-800 pb-4">
-            <Link to="/admin" className="flex items-center gap-3 no-underline">
+            <Link to="/empleado" className="flex items-center gap-3 no-underline">
               <img
                 src={logo}
                 alt="LudAngel Games Logo"
@@ -80,9 +74,11 @@ function AdminLayout({ children }) {
               />
               <div>
                 <span className="text-base font-black tracking-wide text-white block">
-                  LUDANGEL <span className="text-[#06b6d4]">GAMES</span>
+                  LUDANGEL <span className="text-emerald-400">GAMES</span>
                 </span>
-                <span className="text-[10px] font-bold uppercase tracking-widest text-[#06b6d4]">Administración</span>
+                <span className="text-[10px] font-bold uppercase tracking-widest text-emerald-400">
+                  Panel Empleado
+                </span>
               </div>
             </Link>
 
@@ -95,22 +91,22 @@ function AdminLayout({ children }) {
             </button>
           </div>
 
-          {/* PERFIL DEL ADMINISTRADOR */}
+          {/* PERFIL DEL EMPLEADO */}
           <div className="rounded-xl border border-slate-800 bg-[#0f172a] p-3 flex items-center gap-3">
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-tr from-[#06b6d4] to-[#0284c7] font-black text-slate-950 text-base shadow-md">
-              {usuario?.nombre ? usuario.nombre[0].toUpperCase() : "A"}
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-tr from-emerald-400 to-teal-500 font-black text-slate-950 text-base shadow-md">
+              {usuario?.nombre ? usuario.nombre[0].toUpperCase() : "E"}
             </div>
             <div className="overflow-hidden">
               <p className="text-sm font-bold text-white truncate m-0">
                 {usuario?.nombre} {usuario?.apellido || ""}
               </p>
-              <span className="inline-block rounded-full bg-cyan-500/10 px-2 py-0.5 text-[10px] font-bold text-cyan-300 border border-cyan-500/20">
-                Administrador
+              <span className="inline-block rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold text-emerald-300 border border-emerald-500/20">
+                Empleado
               </span>
             </div>
           </div>
 
-          {/* NAVEGACIÓN PRINCIPAL DEL DASHBOARD */}
+          {/* NAVEGACIÓN PRINCIPAL */}
           <div className="flex flex-col gap-1.5">
             <span className="px-3 text-[11px] font-bold uppercase tracking-wider text-slate-500">Menú</span>
             {menuItems.map((item) => (
@@ -120,7 +116,7 @@ function AdminLayout({ children }) {
                 onClick={() => setSidebarAbierto(false)}
                 className={`flex items-center gap-3 rounded-xl px-3.5 py-3 text-sm font-bold no-underline transition-all ${
                   esActivo(item.ruta)
-                    ? "bg-gradient-to-r from-[#06b6d4] to-[#0284c7] text-slate-950 shadow-lg shadow-cyan-500/20 font-black"
+                    ? "bg-gradient-to-r from-emerald-400 to-teal-500 text-slate-950 shadow-lg shadow-emerald-500/20 font-black"
                     : "text-slate-300 hover:bg-slate-800/80 hover:text-white"
                 }`}
               >
@@ -163,7 +159,7 @@ function AdminLayout({ children }) {
 
       {/* ÁREA DE CONTENIDO PRINCIPAL */}
       <div className="flex min-w-0 flex-1 flex-col overflow-hidden lg:pl-64">
-        {/* TOPBAR DEL DASHBOARD */}
+        {/* TOPBAR */}
         <header className="flex h-16 shrink-0 items-center justify-between border-b border-slate-800 bg-[#0b1120]/80 px-4 sm:px-6 backdrop-blur-md">
           <div className="flex items-center gap-3">
             <button
@@ -175,14 +171,12 @@ function AdminLayout({ children }) {
             </button>
             <div className="flex items-center gap-2">
               <span className="text-xs font-bold text-slate-500 uppercase">Sección:</span>
-              <span className="text-sm font-extrabold text-[#06b6d4]">
-                {location.pathname === "/admin"
+              <span className="text-sm font-extrabold text-emerald-400">
+                {location.pathname === "/empleado"
                   ? "Dashboard Principal"
-                  : location.pathname === "/admin/usuarios"
-                  ? "Gestión de Usuarios"
-                  : location.pathname === "/admin/productos"
+                  : location.pathname === "/empleado/productos"
                   ? "Gestión de Productos"
-                  : "Administración"}
+                  : "Panel de Empleado"}
               </span>
             </div>
           </div>
@@ -204,4 +198,4 @@ function AdminLayout({ children }) {
   );
 }
 
-export default AdminLayout;
+export default EmployeeLayout;

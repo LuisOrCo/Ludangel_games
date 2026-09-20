@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import logo from "../assets/logo.jpg";
 
 function RegisterModal({ isOpen, onClose }) {
@@ -176,6 +176,31 @@ const validarConfirmPassword = (valor) => {
   return "";
 };
 
+  // ── Validación en tiempo real ──────────────────────────────────────────────
+  // Cada vez que el usuario escribe en cualquier campo se recalculan todos los
+  // errores. Si no hay ninguno, limpiamos el mensaje general de submit para que
+  // desaparezca sin que el usuario tenga que volver a enviar el formulario.
+  useEffect(() => {
+    const validationErrors = {
+      nombre: validarNombre(formData.nombre),
+      apellido: validarApellido(formData.apellido),
+      numero_documento: validarDocumento(formData.numero_documento),
+      direccion: validarDireccion(formData.direccion),
+      telefono: validarTelefono(formData.telefono),
+      correo: validarEmail(formData.correo),
+      contrasena: validarPassword(formData.contrasena),
+      confirmar_contrasena: validarConfirmPassword(formData.confirmar_contrasena),
+    };
+
+    const hayErrores = Object.values(validationErrors).some(Boolean);
+
+    // Si todos los campos ya son válidos, ocultamos el mensaje general
+    if (!hayErrores) {
+      setSubmitError("");
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formData]);
+
   if (!isOpen) return null;
 
 const handleChange = (e) => {
@@ -241,6 +266,8 @@ const handleChange = (e) => {
     }));
   }
 };
+
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     const validationErrors = {
@@ -415,7 +442,7 @@ const handleChange = (e) => {
                   <input
                     type="text"
                     name="numero_documento"
-                    maxLength={15}
+                    maxLength={12}
                     placeholder="123456789"
                     value={formData.numero_documento}
                     onChange={handleChange}

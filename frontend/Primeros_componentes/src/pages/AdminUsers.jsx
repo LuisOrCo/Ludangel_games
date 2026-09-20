@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import FormModal from "../components/FormModal";
 
 const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:8000";
 
@@ -163,11 +164,12 @@ function AdminUsers() {
       {error && <p className="rounded-xl border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-300">{error}</p>}
 
       {mostrarFormulario && (
-        <section className="rounded-2xl border border-cyan-500/30 bg-[#0f172a] p-6 shadow-xl sm:p-8">
-          <h2 className="text-xl font-bold text-white">
-            {usuarioEditando ? "Editar usuario" : "Crear usuario"}
-          </h2>
+        <FormModal
+          title={usuarioEditando ? "Editar usuario" : "Crear usuario"}
+          onClose={() => setMostrarFormulario(false)}
+        >
           <form onSubmit={guardarUsuario} className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
+            {error && <p className="rounded-xl border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-300 md:col-span-2">{error}</p>}
             {[
               ["nombre", "Nombre", "text"],
               ["apellido", "Apellido", "text"],
@@ -225,7 +227,7 @@ function AdminUsers() {
               </button>
             </div>
           </form>
-        </section>
+        </FormModal>
       )}
 
       <section className="overflow-x-auto rounded-2xl border border-slate-800 bg-[#0f172a] shadow-xl">

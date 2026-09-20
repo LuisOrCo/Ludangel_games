@@ -20,9 +20,13 @@ import AdminRoute from "./components/AdminRoute";
 import ClientRoute from "./components/ClientRoute";
 import WhatsAppButton from "./components/WhatsAppButton";
 import AdminLayout from "./components/AdminLayout";
+import EmployeeLayout from "./components/EmployeeLayout";
 
 // Rutas que tienen su propio layout (sin Navbar/Footer global)
-const RUTAS_ADMIN = ["/admin", "/admin/usuarios", "/admin/productos"];
+const RUTAS_ADMIN = [
+  "/admin", "/admin/usuarios", "/admin/productos",
+  "/empleado", "/empleado/productos",
+];
 
 function App() {
   const location = useLocation();
@@ -66,7 +70,9 @@ function App() {
             path="/empleado"
             element={
               <EmployeeRoute>
-                <EmployeePanel />
+                <EmployeeLayout>
+                  <EmployeePanel />
+                </EmployeeLayout>
               </EmployeeRoute>
             }
           />
@@ -74,7 +80,9 @@ function App() {
             path="/empleado/productos"
             element={
               <EmployeeRoute>
-                <AdminProducts panelPath="/empleado" />
+                <EmployeeLayout>
+                  <AdminProducts panelPath="/empleado" />
+                </EmployeeLayout>
               </EmployeeRoute>
             }
           />

@@ -65,7 +65,9 @@ def enviar_codigo_recuperacion(destinatario: str, codigo: str) -> None:
     """Envía el código por SMTP. Las credenciales viven solo en el archivo .env."""
     host = os.getenv("SMTP_HOST")
     usuario_smtp = os.getenv("SMTP_USER")
-    clave_smtp = os.getenv("SMTP_PASSWORD")
+    # Gmail muestra las contraseñas de aplicación en grupos de cuatro caracteres.
+    # Se eliminan espacios accidentales al copiarla desde la configuración.
+    clave_smtp = "".join((os.getenv("SMTP_PASSWORD") or "").split())
     remitente = os.getenv("SMTP_FROM", usuario_smtp or "")
     puerto = int(os.getenv("SMTP_PORT", "587"))
 

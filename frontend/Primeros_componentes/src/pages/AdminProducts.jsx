@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import FormModal from "../components/FormModal";
 
 const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:8000";
 const formularioInicial = { nombre: "", descripcion: "", precio: "", stock: "0", imagen: "" };
@@ -80,9 +81,9 @@ function AdminProducts({ panelPath = "/admin" }) {
       {mensaje && <p className="rounded-xl border border-emerald-500/40 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-300">{mensaje}</p>}
       {error && <p className="rounded-xl border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-300">{error}</p>}
 
-      {mostrarFormulario && <section className="rounded-2xl border border-cyan-500/30 bg-[#0f172a] p-6 shadow-xl sm:p-8">
-        <h2 className="text-xl font-bold text-white">{productoEditando ? "Editar producto" : "Crear producto"}</h2>
+      {mostrarFormulario && <FormModal title={productoEditando ? "Editar producto" : "Crear producto"} onClose={() => setMostrarFormulario(false)}>
         <form onSubmit={guardar} className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
+          {error && <p className="rounded-xl border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-300 md:col-span-2">{error}</p>}
           <label className="flex flex-col gap-1.5 text-sm font-medium text-slate-300 md:col-span-2">Nombre<input required maxLength="100" value={formulario.nombre} onChange={(e) => actualizarCampo("nombre", e.target.value)} className="rounded-xl border border-slate-700 bg-[#0b1120] px-3.5 py-3 text-white outline-none focus:border-[#06b6d4]" /></label>
           <label className="flex flex-col gap-1.5 text-sm font-medium text-slate-300">Precio (COP)<input required min="1" step="0.01" type="number" value={formulario.precio} onChange={(e) => actualizarCampo("precio", e.target.value)} className="rounded-xl border border-slate-700 bg-[#0b1120] px-3.5 py-3 text-white outline-none focus:border-[#06b6d4]" /></label>
           <label className="flex flex-col gap-1.5 text-sm font-medium text-slate-300">Stock<input required min="0" step="1" type="number" value={formulario.stock} onChange={(e) => actualizarCampo("stock", e.target.value)} className="rounded-xl border border-slate-700 bg-[#0b1120] px-3.5 py-3 text-white outline-none focus:border-[#06b6d4]" /></label>
@@ -90,7 +91,7 @@ function AdminProducts({ panelPath = "/admin" }) {
           <label className="flex flex-col gap-1.5 text-sm font-medium text-slate-300 md:col-span-2">Descripción <textarea rows="4" value={formulario.descripcion} onChange={(e) => actualizarCampo("descripcion", e.target.value)} className="rounded-xl border border-slate-700 bg-[#0b1120] px-3.5 py-3 text-white outline-none focus:border-[#06b6d4]" /></label>
           <div className="flex justify-end gap-3 pt-2 md:col-span-2"><button type="button" onClick={() => setMostrarFormulario(false)} className="rounded-xl border border-slate-700 px-5 py-3 text-sm font-bold text-slate-300">Cancelar</button><button disabled={guardando} className="rounded-xl bg-[#06b6d4] px-5 py-3 text-sm font-bold text-slate-950">{guardando ? "Guardando..." : "Guardar producto"}</button></div>
         </form>
-      </section>}
+      </FormModal>}
 
       <section className="overflow-x-auto rounded-2xl border border-slate-800 bg-[#0f172a] shadow-xl"><table className="w-full min-w-[850px] text-left text-sm"><thead className="border-b border-slate-800 bg-slate-900/60 text-xs uppercase tracking-wider text-slate-400"><tr><th className="px-5 py-4">Producto</th><th className="px-5 py-4">Precio</th><th className="px-5 py-4">Stock</th><th className="px-5 py-4">Estado</th><th className="px-5 py-4">Acciones</th></tr></thead><tbody className="divide-y divide-slate-800">
         {cargando ? <tr><td colSpan="5" className="px-5 py-10 text-center text-slate-400">Cargando productos...</td></tr> : productos.length === 0 ? <tr><td colSpan="5" className="px-5 py-10 text-center text-slate-400">No hay productos registrados.</td></tr> : productos.map((producto) => <tr key={producto.id_producto} className="text-slate-300"><td className="px-5 py-4"><div className="flex items-center gap-3">{producto.imagen ? <img src={producto.imagen} alt="" className="h-11 w-11 rounded-lg object-cover" /> : <span className="flex h-11 w-11 items-center justify-center rounded-lg bg-slate-800 text-xl">🎮</span>}<div><p className="font-bold text-white">{producto.nombre}</p><p className="mt-1 max-w-xs truncate text-xs text-slate-500">{producto.descripcion || "Sin descripción"}</p></div></div></td><td className="px-5 py-4 font-semibold text-white">${Number(producto.precio).toLocaleString("es-CO")}</td><td className="px-5 py-4">{producto.stock}</td><td className="px-5 py-4"><button onClick={() => cambiarEstado(producto)} className={`rounded-full px-2.5 py-1 text-xs font-bold ${producto.estado ? "bg-emerald-500/15 text-emerald-300" : "bg-red-500/15 text-red-300"}`}>{producto.estado ? "Activo" : "Inactivo"}</button></td><td className="px-5 py-4"><div className="flex gap-2"><button onClick={() => abrirEditar(producto)} className="rounded-lg border border-slate-700 px-3 py-2 text-xs font-bold text-slate-200 hover:border-cyan-500">Editar</button><button onClick={() => eliminar(producto)} className="rounded-lg border border-red-500/40 px-3 py-2 text-xs font-bold text-red-300 hover:bg-red-500/10">Eliminar</button></div></td></tr>) }
