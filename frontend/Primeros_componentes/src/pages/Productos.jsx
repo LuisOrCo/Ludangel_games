@@ -17,7 +17,7 @@ function Productos() {
   useEffect(() => {
     const cargarProductos = async () => {
       try {
-        const respuesta = await fetch(`${API_URL}/api/v1/productos`);
+        const respuesta = await fetch(`${API_URL}/api/v1/productos/`);
         const datos = await respuesta.json();
         if (!respuesta.ok) throw new Error(datos.message ?? "No fue posible cargar los productos.");
         setProductos(datos.productos.filter((producto) => Boolean(producto.estado)));
