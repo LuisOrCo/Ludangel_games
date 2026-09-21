@@ -212,10 +212,10 @@ def descargar_factura_pdf(
 
         # Total
         y -= 25
-        p.setFont("Helvetica-Bold", 14)
+        p.setFont("Helvetica-Bold", 12)
         p.setFillColor(colors.HexColor("#4F46E5"))
-        p.drawString(350, y, "TOTAL FACTURADO:")
-        p.drawString(480, y, f"${float(venta.total):,.2f}")
+        p.drawString(280, y, "TOTAL FACTURADO:")
+        p.drawRightString(width - 50, y, f"${float(venta.total):,.2f}")
 
         # Pie de página
         p.setFont("Helvetica-Oblique", 9)
