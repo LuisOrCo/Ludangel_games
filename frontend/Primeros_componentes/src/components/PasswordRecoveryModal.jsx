@@ -1,7 +1,6 @@
 import { useState } from "react";
 import logo from "../assets/logo.jpg";
-
-const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:8000";
+import { API_URL } from "../config/api";
 
 function PasswordRecoveryModal({ isOpen, onClose }) {
   const [step, setStep] = useState("email");

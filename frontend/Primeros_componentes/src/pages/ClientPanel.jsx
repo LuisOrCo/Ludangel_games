@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-
-const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:8000";
+import { API_URL } from "../config/api";
 
 function ClientPanel() {
   const [tabActiva, setTabActiva] = useState("perfil"); // "perfil", "compras", "pqrs"

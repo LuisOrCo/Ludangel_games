@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import RegisterModal from "../components/RegisterModal";
 import PasswordRecoveryModal from "../components/PasswordRecoveryModal";
 import logo from "../assets/logo.jpg";
+import { API_URL } from "../config/api";
 
 function Login() {
   const navigate = useNavigate();
@@ -22,7 +23,7 @@ function Login() {
 
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL ?? "http://localhost:8000"}/api/v1/auth/login`,
+        `${API_URL}/api/v1/auth/login`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

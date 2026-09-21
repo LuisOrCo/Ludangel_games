@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import logo from "../assets/logo.jpg";
+import { API_URL } from "../config/api";
 
 function RegisterModal({ isOpen, onClose }) {
   const [formData, setFormData] = useState({
@@ -292,7 +293,7 @@ const handleChange = (e) => {
 
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL ?? "http://localhost:8000"}/api/v1/auth/register`,
+        `${API_URL}/api/v1/auth/register`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
