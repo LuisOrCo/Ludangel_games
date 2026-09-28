@@ -41,7 +41,7 @@ function AdminUsers() {
     const datos = await respuesta.json();
 
     if (!respuesta.ok) {
-      throw new Error(datos.message ?? "No fue posible completar la operación.");
+      throw new Error(datos.detail ?? datos.message ?? "No fue posible completar la operación.");
     }
 
     return datos;
@@ -115,13 +115,15 @@ function AdminUsers() {
   };
 
   const cambiarEstado = async (usuario) => {
+    const accion = usuario.estado ? "desactivar" : "activar";
+    if (!window.confirm(`¿Deseas ${accion} al usuario "${usuario.nombre} ${usuario.apellido}"?${usuario.estado ? "\n\nAl desactivarlo, el usuario no podrá iniciar sesión." : "\n\nAl activarlo, el usuario podrá iniciar sesión nuevamente."}`)) return;
     setError("");
     try {
       const respuesta = await solicitar(`/${usuario.id_usuario}/estado`, {
         method: "PATCH",
         body: JSON.stringify({ estado: !Boolean(usuario.estado) }),
       });
-      setMensaje(respuesta.message);
+      setMensaje(respuesta.message ?? respuesta.mensaje);
       await cargarUsuarios();
     } catch (err) {
       setError(err.message);
@@ -129,12 +131,12 @@ function AdminUsers() {
   };
 
   const eliminar = async (usuario) => {
-    if (!window.confirm(`¿Eliminar definitivamente a ${usuario.nombre} ${usuario.apellido}?`)) return;
+    if (!window.confirm(`⚠️ ¿Eliminar DEFINITIVAMENTE a ${usuario.nombre} ${usuario.apellido}?\n\nEsta acción no se puede deshacer. Si el usuario tiene ventas o PQRs asociadas, no podrá eliminarse.\n\nSi solo deseas restringir su acceso, usa la opción "Desactivar" en su lugar.`)) return;
 
     setError("");
     try {
       const respuesta = await solicitar(`/${usuario.id_usuario}`, { method: "DELETE" });
-      setMensaje(respuesta.message);
+      setMensaje(respuesta.message ?? respuesta.mensaje);
       await cargarUsuarios();
     } catch (err) {
       setError(err.message);

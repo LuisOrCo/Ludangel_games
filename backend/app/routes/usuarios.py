@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from ..database import SessionLocal
-from ..models import Usuario, Rol
+from ..models import Usuario, Rol, Venta, PQR
 from ..schemas import (
     UsuarioCreate,
     UsuarioUpdate,
@@ -285,6 +285,27 @@ def eliminar_usuario(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Usuario con ID {id_usuario} no encontrado"
+        )
+
+    # Verificar si el usuario tiene ventas asociadas
+    total_ventas = db.query(Venta).filter(
+        Venta.id_usuario == id_usuario
+    ).count()
+
+    # Verificar si el usuario tiene PQRs asociadas
+    total_pqrs = db.query(PQR).filter(
+        PQR.id_usuario == id_usuario
+    ).count()
+
+    if total_ventas > 0 or total_pqrs > 0:
+        partes = []
+        if total_ventas > 0:
+            partes.append(f"{total_ventas} venta(s)")
+        if total_pqrs > 0:
+            partes.append(f"{total_pqrs} PQR(s)")
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"No se puede eliminar el usuario '{usuario.nombre} {usuario.apellido}' porque tiene {' y '.join(partes)} registrada(s). Considere desactivarlo en su lugar."
         )
 
     db.delete(usuario)

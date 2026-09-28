@@ -21,7 +21,7 @@ function AdminProducts({ panelPath = "/admin" }) {
       headers: { Authorization: `Bearer ${obtenerToken()}`, "Content-Type": "application/json", ...opciones.headers },
     });
     const datos = await respuesta.json();
-    if (!respuesta.ok) throw new Error(datos.message ?? "No fue posible completar la operación.");
+    if (!respuesta.ok) throw new Error(datos.detail ?? datos.message ?? "No fue posible completar la operación.");
     return datos;
   }, []);
 
@@ -55,17 +55,19 @@ function AdminProducts({ panelPath = "/admin" }) {
   };
 
   const cambiarEstado = async (producto) => {
+    const accion = producto.estado ? "desactivar" : "activar";
+    if (!window.confirm(`¿Deseas ${accion} el producto "${producto.nombre}"?${producto.estado ? "\n\nAl desactivarlo, dejará de mostrarse en el catálogo público." : "\n\nAl activarlo, volverá a mostrarse en el catálogo público."}`)) return;
     try {
       const respuesta = await solicitar(`/${producto.id_producto}/estado`, { method: "PATCH", body: JSON.stringify({ estado: !Boolean(producto.estado) }) });
-      setMensaje(respuesta.message); await cargarProductos();
+      setMensaje(respuesta.message ?? respuesta.mensaje); await cargarProductos();
     } catch (err) { setError(err.message); }
   };
 
   const eliminar = async (producto) => {
-    if (!window.confirm(`¿Eliminar definitivamente el producto "${producto.nombre}"?`)) return;
+    if (!window.confirm(`⚠️ ¿Eliminar DEFINITIVAMENTE el producto "${producto.nombre}"?\n\nEsta acción no se puede deshacer. Si el producto tiene ventas asociadas, no podrá eliminarse.\n\nSi solo deseas que no aparezca en el catálogo, usa la opción "Desactivar" en su lugar.`)) return;
     try {
       const respuesta = await solicitar(`/${producto.id_producto}`, { method: "DELETE" });
-      setMensaje(respuesta.message); await cargarProductos();
+      setMensaje(respuesta.message ?? respuesta.mensaje); await cargarProductos();
     } catch (err) { setError(err.message); }
   };
 

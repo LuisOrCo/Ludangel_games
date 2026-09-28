@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
 
 from ..database import SessionLocal
 from ..models import Servicio
@@ -131,8 +132,15 @@ def eliminar_servicio(id_servicio: int, db: Session = Depends(get_db)):
             detail=f"Servicio con ID {id_servicio} no encontrado"
         )
 
-    db.delete(servicio)
-    db.commit()
+    try:
+        db.delete(servicio)
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"No se puede eliminar el servicio '{servicio.nombre}' porque tiene registros asociados. Considere desactivarlo en su lugar."
+        )
 
     return {
         "message": f"Servicio con ID {id_servicio} eliminado exitosamente",

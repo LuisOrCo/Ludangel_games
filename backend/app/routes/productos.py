@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from ..database import SessionLocal
-from ..models import Producto
+from ..models import Producto, DetalleVenta
 from ..schemas import (
     ProductoCreate,
     ProductoUpdate,
@@ -130,6 +130,17 @@ def eliminar_producto(id_producto: int, db: Session = Depends(get_db)):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Producto con ID {id_producto} no encontrado"
+        )
+
+    # Verificar si el producto está asociado a ventas
+    total_ventas = db.query(DetalleVenta).filter(
+        DetalleVenta.id_producto == id_producto
+    ).count()
+
+    if total_ventas > 0:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"No se puede eliminar el producto '{producto.nombre}' porque está asociado a {total_ventas} venta(s). Considere desactivarlo en su lugar."
         )
 
     db.delete(producto)
