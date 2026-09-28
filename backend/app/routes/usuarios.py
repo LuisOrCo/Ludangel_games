@@ -231,6 +231,17 @@ def actualizar_usuario(
                 detail=f"El rol con ID {usuario_update.id_rol} no existe"
             )
 
+        # Si se le cambia el rol a un administrador, validar que no sea el único
+        rol_admin = db.query(Rol).filter(Rol.nombre.ilike("administrador")).first()
+        admin_role_id = rol_admin.id_rol if rol_admin else 1
+        if (usuario.id_rol == admin_role_id or (usuario.rol and usuario.rol.nombre.lower() == "administrador")) and usuario_update.id_rol != admin_role_id:
+            total_admins = db.query(Usuario).filter(Usuario.id_rol == admin_role_id, Usuario.id_usuario != id_usuario).count()
+            if total_admins == 0:
+                raise HTTPException(
+                    status_code=status.HTTP_409_CONFLICT,
+                    detail="No se puede cambiar el rol de este usuario porque es el único administrador del sistema."
+                )
+
     datos_actualizados = usuario_update.model_dump(exclude_unset=True)
 
     if "contrasena" in datos_actualizados:
@@ -263,6 +274,22 @@ def cambiar_estado_usuario(
             detail=f"Usuario con ID {id_usuario} no encontrado"
         )
 
+    # Si se intenta desactivar a un administrador, validar que haya otros administradores activos
+    if not estado_update.estado:
+        rol_admin = db.query(Rol).filter(Rol.nombre.ilike("administrador")).first()
+        admin_role_id = rol_admin.id_rol if rol_admin else 1
+        if usuario.id_rol == admin_role_id or (usuario.rol and usuario.rol.nombre.lower() == "administrador"):
+            total_admins_activos = db.query(Usuario).filter(
+                Usuario.id_rol == admin_role_id,
+                Usuario.estado == True,
+                Usuario.id_usuario != id_usuario
+            ).count()
+            if total_admins_activos == 0:
+                raise HTTPException(
+                    status_code=status.HTTP_409_CONFLICT,
+                    detail="No se puede desactivar a este usuario porque es el único administrador activo del sistema."
+                )
+
     usuario.estado = estado_update.estado
     db.commit()
     db.refresh(usuario)
@@ -286,6 +313,18 @@ def eliminar_usuario(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Usuario con ID {id_usuario} no encontrado"
         )
+
+    # Verificar si es el único administrador del sistema
+    rol_admin = db.query(Rol).filter(Rol.nombre.ilike("administrador")).first()
+    admin_role_id = rol_admin.id_rol if rol_admin else 1
+
+    if usuario.id_rol == admin_role_id or (usuario.rol and usuario.rol.nombre.lower() == "administrador"):
+        total_admins = db.query(Usuario).filter(Usuario.id_rol == admin_role_id).count()
+        if total_admins <= 1:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail=f"No se puede eliminar a '{usuario.nombre} {usuario.apellido}' porque es el único administrador del sistema. Debe existir al menos una cuenta de administrador."
+            )
 
     # Verificar si el usuario tiene ventas asociadas
     total_ventas = db.query(Venta).filter(
