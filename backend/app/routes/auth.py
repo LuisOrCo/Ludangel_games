@@ -62,13 +62,90 @@ def formatear_usuario_respuesta(usuario: Usuario) -> UsuarioResponse:
 
 
 def enviar_codigo_recuperacion(destinatario: str, codigo: str) -> None:
-    """Envía el código por SMTP. Las credenciales viven solo en el archivo .env."""
-    host = (os.getenv("SMTP_HOST") or "").strip().strip('\'"')
+    """
+    Envía el código de recuperación.
+    Soporta:
+    1. Brevo HTTPS API (BREVO_API_KEY) - Recomendado para Railway Free/Trial (usa puerto 443 HTTPS, sin bloqueo de puertos).
+    2. Resend HTTPS API (RESEND_API_KEY) - Alternativa HTTPS (puerto 443).
+    3. SMTP tradicional (Gmail/Outlook) - Para entorno local o servidores con puertos SMTP habilitados.
+    """
+    brevo_api_key = (os.getenv("BREVO_API_KEY") or "").strip().strip('\'"')
+    resend_api_key = (os.getenv("RESEND_API_KEY") or "").strip().strip('\'"')
     usuario_smtp = (os.getenv("SMTP_USER") or "").strip().strip('\'"')
+    remitente = (os.getenv("SMTP_FROM") or usuario_smtp or "angelortegacorrea09@gmail.com").strip().strip('\'"')
+
+    # --- 1. ENVÍO VÍA BREVO API (HTTPS / Puerto 443) ---
+    if brevo_api_key:
+        import httpx
+        url = "https://api.brevo.com/v3/smtp/email"
+        headers = {
+            "accept": "application/json",
+            "api-key": brevo_api_key,
+            "content-type": "application/json"
+        }
+        sender_email = usuario_smtp or remitente
+        payload = {
+            "sender": {"name": "LudAngel Games", "email": sender_email},
+            "to": [{"email": destinatario}],
+            "subject": "Código de recuperación de contraseña - LudAngel Games",
+            "htmlContent": (
+                f"<div style='font-family: Arial, sans-serif; max-width: 500px; margin: 0 auto; padding: 25px; "
+                f"background-color: #0f172a; color: #f8fafc; border-radius: 12px; border: 1px solid #1e293b;'>"
+                f"<h2 style='color: #38bdf8; margin-top: 0;'>LudAngel Games</h2>"
+                f"<p style='font-size: 16px;'>Hola,</p>"
+                f"<p style='color: #cbd5e1;'>Has solicitado restablecer tu contraseña. Tu código de verificación es:</p>"
+                f"<div style='text-align: center; margin: 25px 0;'>"
+                f"<span style='font-size: 32px; font-weight: bold; letter-spacing: 6px; color: #38bdf8; "
+                f"background: #1e293b; padding: 10px 24px; border-radius: 8px; border: 1px solid #0284c7; display: inline-block;'>"
+                f"{codigo}</span>"
+                f"</div>"
+                f"<p style='color: #94a3b8; font-size: 14px;'>Este código es válido durante <strong>{CODIGO_RECUPERACION_MINUTOS} minutos</strong>.</p>"
+                f"<p style='color: #64748b; font-size: 12px; margin-top: 20px;'>Si no solicitaste este cambio, puedes ignorar este mensaje.</p>"
+                f"</div>"
+            ),
+        }
+        response = httpx.post(url, json=payload, headers=headers, timeout=12.0)
+        if response.status_code not in (200, 201, 202):
+            raise RuntimeError(f"Error Brevo API ({response.status_code}): {response.text}")
+        return
+
+    # --- 2. ENVÍO VÍA RESEND API (HTTPS / Puerto 443) ---
+    if resend_api_key:
+        import httpx
+        url = "https://api.resend.com/emails"
+        headers = {
+            "Authorization": f"Bearer {resend_api_key}",
+            "Content-Type": "application/json"
+        }
+        payload = {
+            "from": remitente if "@" in remitente and "gmail" not in remitente.lower() else "LudAngel Games <onboarding@resend.dev>",
+            "to": [destinatario],
+            "subject": "Código de recuperación de contraseña - LudAngel Games",
+            "html": (
+                f"<div style='font-family: Arial, sans-serif; max-width: 500px; margin: 0 auto; padding: 25px; "
+                f"background-color: #0f172a; color: #f8fafc; border-radius: 12px; border: 1px solid #1e293b;'>"
+                f"<h2 style='color: #38bdf8; margin-top: 0;'>LudAngel Games</h2>"
+                f"<p style='font-size: 16px;'>Hola,</p>"
+                f"<p style='color: #cbd5e1;'>Has solicitado restablecer tu contraseña. Tu código de verificación es:</p>"
+                f"<div style='text-align: center; margin: 25px 0;'>"
+                f"<span style='font-size: 32px; font-weight: bold; letter-spacing: 6px; color: #38bdf8; "
+                f"background: #1e293b; padding: 10px 24px; border-radius: 8px; border: 1px solid #0284c7; display: inline-block;'>"
+                f"{codigo}</span>"
+                f"</div>"
+                f"<p style='color: #94a3b8; font-size: 14px;'>Este código es válido durante <strong>{CODIGO_RECUPERACION_MINUTOS} minutos</strong>.</p>"
+                f"<p style='color: #64748b; font-size: 12px; margin-top: 20px;'>Si no solicitaste este cambio, puedes ignorar este mensaje.</p>"
+                f"</div>"
+            ),
+        }
+        response = httpx.post(url, json=payload, headers=headers, timeout=12.0)
+        if response.status_code not in (200, 201, 202):
+            raise RuntimeError(f"Error Resend API ({response.status_code}): {response.text}")
+        return
+
+    # --- 3. ENVÍO VÍA SMTP CLÁSICO ---
+    host = (os.getenv("SMTP_HOST") or "").strip().strip('\'"')
     # Gmail muestra las contraseñas de aplicación en grupos de cuatro caracteres.
-    # Se eliminan espacios accidentales y comillas al copiarla desde la configuración.
     clave_smtp = "".join((os.getenv("SMTP_PASSWORD") or "").strip().strip('\'"').split())
-    remitente = (os.getenv("SMTP_FROM") or usuario_smtp or "").strip().strip('\'"')
     puerto_str = (os.getenv("SMTP_PORT") or "587").strip().strip('\'"')
     puerto = int(puerto_str) if puerto_str.isdigit() else 587
 
@@ -103,6 +180,7 @@ def enviar_codigo_recuperacion(destinatario: str, codigo: str) -> None:
                 servidor.starttls()
             servidor.login(usuario_smtp, clave_smtp)
             servidor.send_message(mensaje)
+
 
 
 
