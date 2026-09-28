@@ -369,7 +369,7 @@ const handleChange = (e) => {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="flex flex-col gap-1.5">
                   <label className="text-xs font-semibold text-slate-300 uppercase tracking-wider">
-                    Nombre <span className="text-[#06b6d4]">*</span>
+                    Nombre <span className="text-[#06b6d4] font-bold ml-0.5">*</span>
                   </label>
                   <input
                     type="text"
@@ -384,16 +384,21 @@ const handleChange = (e) => {
                         : "border-[#1e293b] focus:border-[#06b6d4] focus:ring-1 focus:ring-[#06b6d4]"
                     }`}
                   />
-                  {errors.nombre && (
-                    <span className="text-red-400 text-xs">
-                      {errors.nombre}
+                  <div className="flex justify-between items-start gap-2 text-xs">
+                    {errors.nombre ? (
+                      <span className="text-red-400 text-xs flex-1">{errors.nombre}</span>
+                    ) : (
+                      <span className="flex-1" />
+                    )}
+                    <span className="text-slate-400 text-[11px] font-mono shrink-0 ml-auto">
+                      {formData.nombre.length}/30
                     </span>
-                  )}
+                  </div>
                 </div>
 
                 <div className="flex flex-col gap-1.5">
                   <label className="text-xs font-semibold text-slate-300 uppercase tracking-wider">
-                    Apellido <span className="text-[#06b6d4]">*</span>
+                    Apellido <span className="text-[#06b6d4] font-bold ml-0.5">*</span>
                   </label>
                   <input
                     type="text"
@@ -408,11 +413,16 @@ const handleChange = (e) => {
                         : "border-[#1e293b] focus:border-[#06b6d4] focus:ring-1 focus:ring-[#06b6d4]"
                     }`}
                   />
-                  {errors.apellido && (
-                    <span className="text-red-400 text-xs">
-                      {errors.apellido}
+                  <div className="flex justify-between items-start gap-2 text-xs">
+                    {errors.apellido ? (
+                      <span className="text-red-400 text-xs flex-1">{errors.apellido}</span>
+                    ) : (
+                      <span className="flex-1" />
+                    )}
+                    <span className="text-slate-400 text-[11px] font-mono shrink-0 ml-auto">
+                      {formData.apellido.length}/30
                     </span>
-                  )}
+                  </div>
                 </div>
               </div>
 
@@ -420,7 +430,7 @@ const handleChange = (e) => {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="flex flex-col gap-1.5">
                   <label className="text-xs font-semibold text-slate-300 uppercase tracking-wider">
-                    Tipo de documento <span className="text-[#06b6d4]">*</span>
+                    Tipo de documento <span className="text-[#06b6d4] font-bold ml-0.5">*</span>
                   </label>
                   <select
                     name="tipo_documento"
@@ -438,12 +448,12 @@ const handleChange = (e) => {
 
                 <div className="flex flex-col gap-1.5">
                   <label className="text-xs font-semibold text-slate-300 uppercase tracking-wider">
-                    Número de documento <span className="text-[#06b6d4]">*</span>
+                    Número de documento <span className="text-[#06b6d4] font-bold ml-0.5">*</span>
                   </label>
                   <input
                     type="text"
                     name="numero_documento"
-                    maxLength={12}
+                    maxLength={15}
                     placeholder="123456789"
                     value={formData.numero_documento}
                     onChange={handleChange}
@@ -453,11 +463,16 @@ const handleChange = (e) => {
                         : "border-[#1e293b] focus:border-[#06b6d4] focus:ring-1 focus:ring-[#06b6d4]"
                     }`}
                   />
-                  {errors.numero_documento && (
-                    <span className="text-red-400 text-xs">
-                      {errors.numero_documento}
+                  <div className="flex justify-between items-start gap-2 text-xs">
+                    {errors.numero_documento ? (
+                      <span className="text-red-400 text-xs flex-1">{errors.numero_documento}</span>
+                    ) : (
+                      <span className="flex-1" />
+                    )}
+                    <span className="text-slate-400 text-[11px] font-mono shrink-0 ml-auto">
+                      {formData.numero_documento.length}/15
                     </span>
-                  )}
+                  </div>
                 </div>
               </div>
 
@@ -465,7 +480,7 @@ const handleChange = (e) => {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="flex flex-col gap-1.5">
                   <label className="text-xs font-semibold text-slate-300 uppercase tracking-wider">
-                    Dirección <span className="text-[#06b6d4]">*</span>
+                    Dirección <span className="text-[#06b6d4] font-bold ml-0.5">*</span>
                   </label>
                   <input
                     type="text"
@@ -480,16 +495,21 @@ const handleChange = (e) => {
                         : "border-[#1e293b] focus:border-[#06b6d4] focus:ring-1 focus:ring-[#06b6d4]"
                     }`}
                   />
-                  {errors.direccion && (
-                    <span className="text-red-400 text-xs">
-                      {errors.direccion}
+                  <div className="flex justify-between items-start gap-2 text-xs">
+                    {errors.direccion ? (
+                      <span className="text-red-400 text-xs flex-1">{errors.direccion}</span>
+                    ) : (
+                      <span className="flex-1" />
+                    )}
+                    <span className="text-slate-400 text-[11px] font-mono shrink-0 ml-auto">
+                      {formData.direccion.length}/100
                     </span>
-                  )}
+                  </div>
                 </div>
 
                 <div className="flex flex-col gap-1.5">
                   <label className="text-xs font-semibold text-slate-300 uppercase tracking-wider">
-                    Teléfono <span className="text-[#06b6d4]">*</span>
+                    Teléfono <span className="text-[#06b6d4] font-bold ml-0.5">*</span>
                   </label>
                   <input
                     type="tel"
@@ -504,18 +524,23 @@ const handleChange = (e) => {
                         : "border-[#1e293b] focus:border-[#06b6d4] focus:ring-1 focus:ring-[#06b6d4]"
                     }`}
                   />
-                  {errors.telefono && (
-                    <span className="text-red-400 text-xs">
-                      {errors.telefono}
+                  <div className="flex justify-between items-start gap-2 text-xs">
+                    {errors.telefono ? (
+                      <span className="text-red-400 text-xs flex-1">{errors.telefono}</span>
+                    ) : (
+                      <span className="flex-1" />
+                    )}
+                    <span className="text-slate-400 text-[11px] font-mono shrink-0 ml-auto">
+                      {formData.telefono.length}/10
                     </span>
-                  )}
+                  </div>
                 </div>
               </div>
 
               {/* FILA 4: CORREO ELECTRÓNICO */}
               <div className="flex flex-col gap-1.5">
                 <label className="text-xs font-semibold text-slate-300 uppercase tracking-wider">
-                  Correo electrónico <span className="text-[#06b6d4]">*</span>
+                  Correo electrónico <span className="text-[#06b6d4] font-bold ml-0.5">*</span>
                 </label>
                 <input
                   type="text"
@@ -530,18 +555,23 @@ const handleChange = (e) => {
                       : "border-[#1e293b] focus:border-[#06b6d4] focus:ring-1 focus:ring-[#06b6d4]"
                   }`}
                 />
-                {errors.correo && (
-                  <span className="text-red-400 text-xs">
-                    {errors.correo}
+                <div className="flex justify-between items-start gap-2 text-xs">
+                  {errors.correo ? (
+                    <span className="text-red-400 text-xs flex-1">{errors.correo}</span>
+                  ) : (
+                    <span className="flex-1" />
+                  )}
+                  <span className="text-slate-400 text-[11px] font-mono shrink-0 ml-auto">
+                    {formData.correo.length}/100
                   </span>
-                )}
+                </div>
               </div>
 
               {/* FILA 5: CONTRASEÑA Y CONFIRMACIÓN DE CONTRASEÑA */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="flex flex-col gap-1.5">
                   <label className="text-xs font-semibold text-slate-300 uppercase tracking-wider">
-                    Contraseña <span className="text-[#06b6d4]">*</span>
+                    Contraseña <span className="text-[#06b6d4] font-bold ml-0.5">*</span>
                   </label>
                   <div className="relative">
                     <input
@@ -557,11 +587,6 @@ const handleChange = (e) => {
                           : "border-[#1e293b] focus:border-[#06b6d4] focus:ring-1 focus:ring-[#06b6d4]"
                       }`}
                     />
-                    {errors.contrasena && (
-                      <span className="text-red-400 text-xs">
-                        {errors.contrasena}
-                      </span>
-                    )}
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
@@ -570,11 +595,21 @@ const handleChange = (e) => {
                       {showPassword ? "🔓" : "🔒"}
                     </button>
                   </div>
+                  <div className="flex justify-between items-start gap-2 text-xs">
+                    {errors.contrasena ? (
+                      <span className="text-red-400 text-xs flex-1">{errors.contrasena}</span>
+                    ) : (
+                      <span className="flex-1" />
+                    )}
+                    <span className="text-slate-400 text-[11px] font-mono shrink-0 ml-auto">
+                      {formData.contrasena.length}/30
+                    </span>
+                  </div>
                 </div>
 
                 <div className="flex flex-col gap-1.5">
                   <label className="text-xs font-semibold text-slate-300 uppercase tracking-wider">
-                    Confirmación de contraseña <span className="text-[#06b6d4]">*</span>
+                    Confirmación de contraseña <span className="text-[#06b6d4] font-bold ml-0.5">*</span>
                   </label>
                   <input
                     type={showPassword ? "text" : "password"}
@@ -589,11 +624,16 @@ const handleChange = (e) => {
                         : "border-[#1e293b] focus:border-[#06b6d4] focus:ring-1 focus:ring-[#06b6d4]"
                     }`}
                   />
-                  {errors.confirmar_contrasena && (
-                    <span className="text-red-400 text-xs">
-                      {errors.confirmar_contrasena}
+                  <div className="flex justify-between items-start gap-2 text-xs">
+                    {errors.confirmar_contrasena ? (
+                      <span className="text-red-400 text-xs flex-1">{errors.confirmar_contrasena}</span>
+                    ) : (
+                      <span className="flex-1" />
+                    )}
+                    <span className="text-slate-400 text-[11px] font-mono shrink-0 ml-auto">
+                      {formData.confirmar_contrasena.length}/30
                     </span>
-                  )}
+                  </div>
                 </div>
               </div>
 
