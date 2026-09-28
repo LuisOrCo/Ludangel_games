@@ -63,16 +63,22 @@ def formatear_usuario_respuesta(usuario: Usuario) -> UsuarioResponse:
 
 def enviar_codigo_recuperacion(destinatario: str, codigo: str) -> None:
     """Envía el código por SMTP. Las credenciales viven solo en el archivo .env."""
-    host = os.getenv("SMTP_HOST")
-    usuario_smtp = os.getenv("SMTP_USER")
+    host = (os.getenv("SMTP_HOST") or "").strip().strip('\'"')
+    usuario_smtp = (os.getenv("SMTP_USER") or "").strip().strip('\'"')
     # Gmail muestra las contraseñas de aplicación en grupos de cuatro caracteres.
-    # Se eliminan espacios accidentales al copiarla desde la configuración.
-    clave_smtp = "".join((os.getenv("SMTP_PASSWORD") or "").split())
-    remitente = os.getenv("SMTP_FROM", usuario_smtp or "")
-    puerto = int(os.getenv("SMTP_PORT", "587"))
+    # Se eliminan espacios accidentales y comillas al copiarla desde la configuración.
+    clave_smtp = "".join((os.getenv("SMTP_PASSWORD") or "").strip().strip('\'"').split())
+    remitente = (os.getenv("SMTP_FROM") or usuario_smtp or "").strip().strip('\'"')
+    puerto_str = (os.getenv("SMTP_PORT") or "587").strip().strip('\'"')
+    puerto = int(puerto_str) if puerto_str.isdigit() else 587
 
     if not all([host, usuario_smtp, clave_smtp, remitente]):
-        raise RuntimeError("El servicio de correo no está configurado")
+        faltantes = []
+        if not host: faltantes.append("SMTP_HOST")
+        if not usuario_smtp: faltantes.append("SMTP_USER")
+        if not clave_smtp: faltantes.append("SMTP_PASSWORD")
+        if not remitente: faltantes.append("SMTP_FROM")
+        raise RuntimeError(f"El servicio de correo no está configurado. Variables faltantes: {', '.join(faltantes)}")
 
     mensaje = EmailMessage()
     mensaje["Subject"] = "Código de recuperación de contraseña - LudAngel Games"
@@ -84,11 +90,20 @@ def enviar_codigo_recuperacion(destinatario: str, codigo: str) -> None:
         "No compartas este código con nadie. Si no solicitaste el cambio, ignora este mensaje."
     )
 
-    with smtplib.SMTP(host, puerto, timeout=15) as servidor:
-        if os.getenv("SMTP_USE_TLS", "true").lower() in {"true", "1", "yes"}:
-            servidor.starttls()
-        servidor.login(usuario_smtp, clave_smtp)
-        servidor.send_message(mensaje)
+    use_ssl = os.getenv("SMTP_USE_SSL", "false").strip().strip('\'"').lower() in {"true", "1", "yes"} or puerto == 465
+    use_tls = os.getenv("SMTP_USE_TLS", "true").strip().strip('\'"').lower() in {"true", "1", "yes"}
+
+    if use_ssl:
+        with smtplib.SMTP_SSL(host, puerto, timeout=15) as servidor:
+            servidor.login(usuario_smtp, clave_smtp)
+            servidor.send_message(mensaje)
+    else:
+        with smtplib.SMTP(host, puerto, timeout=15) as servidor:
+            if use_tls:
+                servidor.starttls()
+            servidor.login(usuario_smtp, clave_smtp)
+            servidor.send_message(mensaje)
+
 
 
 @router.post("/password-recovery/request")
@@ -114,11 +129,12 @@ def solicitar_recuperacion(
 
     try:
         enviar_codigo_recuperacion(usuario.correo, codigo)
-    except Exception:
+    except Exception as exc:
         # El código no se puede adivinar; se invalida para no dejar uno activo sin envío.
         registro.usado = True
         db.commit()
-        logger.exception("No fue posible enviar el código de recuperación")
+        logger.exception("No fue posible enviar el código de recuperación: %s", exc)
+        print(f"[ERROR SMTP RECUPERACION] Fallo al enviar correo: {exc}", flush=True)
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail="No fue posible enviar el correo de recuperación. Intenta más tarde.",
